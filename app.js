@@ -14,16 +14,61 @@ const app = createApp({
         const nuevaFrase = ref('');
         const nuevoAutor = ref('');
 
+        // Variables para la edición
+        const editIndex = ref(null);
+        const editFrase = ref('');
+        const editAutor = ref('');
+
+        // Variable para los mensajes de éxito
+        const mensaje = ref('');
+
         const agregarFrase = () => {
             if (nuevaFrase.value.trim() !== '' && nuevoAutor.value.trim() !== '') {
                 frases.value.push({ frase: nuevaFrase.value, autor: nuevoAutor.value });
                 nuevaFrase.value = '';
                 nuevoAutor.value = '';
+                mostrarMensaje('Frase añadida con éxito');
             }
         };
 
-        const eliminarFrase = (numeros) => {
-            frases.value.splice(numeros, 1);
+        const eliminarFrase = (index) => {
+            const confirmacion = confirm("¿Estás seguro de que quieres eliminar esta frase?");
+            if (confirmacion) {
+                frases.value.splice(index, 1);
+                mostrarMensaje('Registro eliminado con éxito');
+            }
+        };
+
+        const iniciarEdicion = (index, fraseObj) => {
+            editIndex.value = index;
+            editFrase.value = fraseObj.frase;
+            editAutor.value = fraseObj.autor;
+        };
+
+        const guardarEdicion = (index) => {
+            if (editFrase.value.trim() !== '' && editAutor.value.trim() !== '') {
+                frases.value[index].frase = editFrase.value;
+                frases.value[index].autor = editAutor.value;
+                cancelarEdicion();
+                mostrarMensaje('Editado con éxito');
+            }
+        };
+
+        const cancelarEdicion = () => {
+            editIndex.value = null;
+            editFrase.value = '';
+            editAutor.value = '';
+        };
+
+        const mostrarMensaje = (msg) => {
+            mensaje.value = msg;
+            setTimeout(() => {
+                mensaje.value = '';
+            }, 3000); // El mensaje desaparecerá después de 3 segundos
+        };
+
+        const cerrarMensaje = () => {
+            mensaje.value = '';
         };
 
         return {
@@ -31,7 +76,15 @@ const app = createApp({
             nuevaFrase,
             nuevoAutor,
             agregarFrase,
-            eliminarFrase
+            eliminarFrase,
+            editIndex,
+            editFrase,
+            editAutor,
+            iniciarEdicion,
+            guardarEdicion,
+            cancelarEdicion,
+            mensaje,
+            cerrarMensaje
         };
     }
 });
