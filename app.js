@@ -13,13 +13,9 @@ const app = createApp({
         const frases = ref(frasesO);
         const nuevaFrase = ref('');
         const nuevoAutor = ref('');
-
-        // Variables para la edición
         const editIndex = ref(null);
         const editFrase = ref('');
         const editAutor = ref('');
-
-        // Variable para los mensajes de éxito
         const mensaje = ref('');
 
         const agregarFrase = () => {
@@ -39,16 +35,20 @@ const app = createApp({
             }
         };
 
-        const iniciarEdicion = (index, fraseObj) => {
+        const iniciarEdicion = (index) => {
             editIndex.value = index;
-            editFrase.value = fraseObj.frase;
-            editAutor.value = fraseObj.autor;
+            editFrase.value = frases.value[index].frase;
+            editAutor.value = frases.value[index].autor;
+
+            // Abre el modal
+            const modal = new bootstrap.Modal(document.getElementById('editModal'));
+            modal.show();
         };
 
-        const guardarEdicion = (index) => {
+        const guardarEdicion = () => {
             if (editFrase.value.trim() !== '' && editAutor.value.trim() !== '') {
-                frases.value[index].frase = editFrase.value;
-                frases.value[index].autor = editAutor.value;
+                frases.value[editIndex.value].frase = editFrase.value;
+                frases.value[editIndex.value].autor = editAutor.value;
                 cancelarEdicion();
                 mostrarMensaje('Editado con éxito');
             }
@@ -58,6 +58,12 @@ const app = createApp({
             editIndex.value = null;
             editFrase.value = '';
             editAutor.value = '';
+
+            // Cierra el modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('editModal'));
+            if (modal) {
+                modal.hide();
+            }
         };
 
         const mostrarMensaje = (msg) => {
